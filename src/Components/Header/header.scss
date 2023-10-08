@@ -1,0 +1,71 @@
+/* body{
+    background-color: brown;
+} */
+//Decalro mi mixin que me sirve para reutilizar estilos
+$menu-color: #7c1010;
+
+@mixin header-link{
+    text-align: center;
+    color: $menu-color;
+    text-decoration: none;
+    letter-spacing: 2px;
+    
+}
+
+@mixin header-border($size:2px){
+    border-bottom:$size solid $menu-color ;
+}
+
+.header{
+
+    &__logo{
+        @include header-link;
+    }
+    &__nav-list{
+        margin-left: 50px;
+        display: flex;
+        list-style: none;
+        column-gap: 20px;
+        flex-wrap: wrap;
+        font-size: 20px;
+        justify-content: space-between;
+        align-items: center;
+    }
+    &__item-link{
+        @include header-link;
+
+        &--is-active{
+            @include header-border($size: 3px)
+        }
+        &:hover{
+            @include header-border()
+        }
+    }
+}
+
+.eslogan{
+    font-size: 15px;
+}
+
+.logout{
+    text-decoration-line: none;
+    color: white;
+}
+
+@media (max-width: 600px) {
+    
+    .header{
+        display: flex;
+        flex-direction: column;
+        &__nav-list{
+            margin: 5px;
+            font-size: 15px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+    .eslogan{
+        font-size:10px;
+    }
+}
