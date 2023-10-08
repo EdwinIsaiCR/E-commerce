@@ -9,6 +9,13 @@ import Navbar from 'react-bootstrap/Navbar'
 const Header = () => {
   const { logout, isAuth } = useAuthContext()
 
+  function vaciarLocal(){
+    const anchura = (localStorage.length - 1)
+    for (let index = 0; index <= anchura; index++) {
+    (localStorage.removeItem(`Producto${index}`))
+  }
+  }
+
   const linkIsActive = (isActive) =>
     isActive ? 'header__item-link header__item-link--is-active' : 'header__item-link'
 
@@ -32,7 +39,10 @@ const Header = () => {
             ? (
               <>
                 <Nav.Link className={({ isActive }) => linkIsActive(isActive)} href='/Carrito'>Carrito</Nav.Link>
-                <Button className='header__item-link' onClick={logout} variant='dark'><a className='logout' href='/login'>logout</a></Button>
+                <Button className='header__item-link' onClick={() => {
+                  logout()
+                  vaciarLocal()}
+                  } variant='dark'><a className='logout' href='/login'>logout</a></Button>
               </>
               )
             : (

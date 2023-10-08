@@ -36,6 +36,8 @@ export default function Home () {
     fetchItemsData()
   }, [])
 
+  
+
   const handlerSearch = (e) => {
     const fetchItemsData = async () => {
       const response = await getAllItemsService()
