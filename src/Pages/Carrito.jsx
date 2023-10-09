@@ -1,4 +1,4 @@
-import { BsFacebook, BsGithub, BsLinkedin, BsTwitter } from 'react-icons/bs'
+import { BsFillTrashFill} from 'react-icons/bs'
 import '@/styles/carrito.css'
 
 const Carrito = () => {
@@ -37,7 +37,7 @@ const Carrito = () => {
                     <option value="17">17</option><option value="18">18</option>
                     <option value="19">19</option><option value="20">20</option>
               </select>
-            <button type="button"><BsFacebook /></button>
+            <button type="button"><BsFillTrashFill /></button>
             </div>
           </div>
         </div>
