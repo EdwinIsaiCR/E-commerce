@@ -3,11 +3,23 @@ import '@/styles/carrito.css'
 
 const Carrito = () => {
   const arrayProducts = []
-  const anchura = (localStorage.length - 1)
+  let contador = 0;
+  const anchura = (localStorage.length - 2)
   for (let index = 0; index < anchura; index++) {
     arrayProducts.push(JSON.parse(localStorage.getItem(`Producto${index}`)))
   }
-  console.log(arrayProducts)
+  console.log(arrayProducts);
+  function eliminar(id){
+    arrayProducts.map((product) => {
+      if(product.id == id){
+        localStorage.removeItem(`Producto${contador}`)
+        console.log("Se elimino el producto");
+        console.log(contador);
+        window.location.reload(true);
+      }
+      contador++
+    })
+  }
   return (
     <div>
       <h1 className='titulo text-center' style={{ margin: '2rem' }}>Carrito</h1>
@@ -20,7 +32,7 @@ const Carrito = () => {
           <img src={product.image} alt={product.product_name} height="420" width="327"/>
           </div>
           <div className="product-info">
-            <div clclassNameass="product-text">
+            <div className="product-text">
               <h1>{product.product_name}</h1>
             </div>
             <div className="product-price-btn">
@@ -37,7 +49,9 @@ const Carrito = () => {
                     <option value="17">17</option><option value="18">18</option>
                     <option value="19">19</option><option value="20">20</option>
               </select>
-            <button type="button"><BsFillTrashFill /></button>
+            <button type="button" onClick={() =>{
+              eliminar(product.id)
+            }}><BsFillTrashFill /></button>
             </div>
           </div>
         </div>

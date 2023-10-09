@@ -108,8 +108,10 @@ export default function Home () {
                     <Button
                       onClick={() => {
                         handleShow()
-                        localStorage.setItem(`Producto${count}`, JSON.stringify(product))
-                        setCount((count) => count + 1)
+                        setCount((count) => (count + 1))
+                        localStorage.setItem("contador", count)
+                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
+                        
                       }} variant='secondary'
                     >Agregar al carrito
                     </Button>
@@ -137,8 +139,9 @@ export default function Home () {
                       <Button
                         onClick={() => {
                           handleShow()
-                          localStorage.setItem(`Producto${count}`, JSON.stringify(product))
-                          setCount((count) => count + 1)
+                        setCount((count) => (count + 1))
+                        localStorage.setItem("contador", count)
+                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
                         }} variant='secondary'
                       >Agregar al carrito
                       </Button>
@@ -166,8 +169,9 @@ export default function Home () {
                       <Button
                         onClick={() => {
                           handleShow()
-                          localStorage.setItem(`Producto${count}`, JSON.stringify(product))
-                          setCount((count) => count + 1)
+                        setCount((count) => (count + 1))
+                        localStorage.setItem("contador", count)
+                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
                         }} variant='secondary'
                       >Agregar al carrito
                       </Button>
@@ -195,8 +199,9 @@ export default function Home () {
                       <Button
                         onClick={() => {
                           handleShow()
-                          localStorage.setItem(`Producto${count}`, JSON.stringify(product))
-                          setCount((count) => count + 1)
+                        setCount((count) => (count + 1))
+                        localStorage.setItem("contador", count)
+                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
                         }} variant='secondary'
                       >Agregar al carrito
                       </Button>

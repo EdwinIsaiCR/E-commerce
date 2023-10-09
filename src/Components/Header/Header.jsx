@@ -14,6 +14,7 @@ const Header = () => {
     for (let index = 0; index <= anchura; index++) {
     (localStorage.removeItem(`Producto${index}`))
   }
+  localStorage.removeItem("contador")
   }
 
   const linkIsActive = (isActive) =>
