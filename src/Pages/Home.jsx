@@ -1,25 +1,25 @@
 import { useState, useEffect } from 'react'
-import Spinner from 'react-bootstrap/Spinner'
+import { Search, ShoppingCart, Star } from 'lucide-react'
 import { getAllItemsService } from '@/services/itemServices'
-import Card from 'react-bootstrap/Card'
-import ListGroup from 'react-bootstrap/ListGroup'
-import '@/styles/cards.css'
-import Modal from 'react-bootstrap/Modal'
-import Button from 'react-bootstrap/Button'
-import Nav from 'react-bootstrap/Nav'
-import Tab from 'react-bootstrap/Tab'
-import Tabs from 'react-bootstrap/Tabs'
+import Header from '@/components/Header/Header'
+import Cart from '@/components/Card/Cart'
+import Footer from '@/components/Footer/Footer'
+import AddedToCartModal from '@/components/Card/AddedToCartModal'
+import AuthModal from '@/components/Card/AuthModal'
 
-export default function Home () {
+export default function Home() {
   const [itemsList, setItemList] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [count, setCount] = useState(0)
-
-  const [show, setShow] = useState(false)
-
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
+  const [activeTab, setActiveTab] = useState('todo')
+  const [showModal, setShowModal] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [showCart, setShowCart] = useState(false)
+  const [cartItems, setCartItems] = useState([])
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
+  const token = localStorage.getItem('token')
 
   useEffect(() => {
     const fetchItemsData = async () => {
@@ -30,202 +30,215 @@ export default function Home () {
           setLoading(false)
         }
       } catch (error) {
-        console.log('Ocurrio un error en Home', error)
+        console.log('Ocurrió un error en Home', error)
       }
     }
     fetchItemsData()
-  }, [])
 
-  
+    // Recuperar items del carrito
+    const savedCount = localStorage.getItem("contador") || 0
+    setCount(parseInt(savedCount))
+    
+    const loadedCartItems = []
+    for (let i = 1; i <= savedCount; i++) {
+      const item = localStorage.getItem(`Producto${i}`)
+      if (item) {
+        loadedCartItems.push(JSON.parse(item))
+      }
+    }
+    setCartItems(loadedCartItems)
 
-  const handlerSearch = (e) => {
-    const fetchItemsData = async () => {
+    setIsAuthenticated(!!token)
+  }, [token])
+
+  const handleSearch = async (e) => {
+    const value = e.target.value
+    setSearch(value)
+    
+    try {
       const response = await getAllItemsService()
       if (response.status === 200) {
-        const value = e.target.value
-        setSearch(value)
         if (!value) {
           setItemList(response.data)
-          setLoading(false)
         } else {
-          const filterProducts = response.data.filter((product) => product.product_name.toLowerCase().includes(search.toLowerCase()))
+          const filterProducts = response.data.filter((product) => 
+            product.product_name.toLowerCase().includes(value.toLowerCase())
+          )
           setItemList(filterProducts)
-          console.log(itemsList)
         }
       }
+    } catch (error) {
+      console.log('Error al buscar productos', error)
     }
-    fetchItemsData()
   }
+
+  const addToCart = (product) => {
+    if (!isAuthenticated) {
+      setShowAuthModal(true)
+      return
+    }
+    const newCount = count + 1
+    setCount(newCount)
+    localStorage.setItem("contador", newCount)
+    localStorage.setItem(`Producto${newCount}`, JSON.stringify(product))
+    setCartItems([...cartItems, product])
+    setSelectedProduct(product)
+    setShowModal(true)
+  }
+
+  const removeFromCart = (index) => {
+    const newItems = [...cartItems]
+    newItems.splice(index, 1)
+    setCartItems(newItems)
+    setCount(count - 1)
+    
+    // Actualizar localStorage
+    localStorage.setItem("contador", count - 1)
+    for (let i = 0; i < newItems.length; i++) {
+      localStorage.setItem(`Producto${i+1}`, JSON.stringify(newItems[i]))
+    }
+    localStorage.removeItem(`Producto${newItems.length+1}`)
+  }
+
+  const filteredItems = activeTab === 'todo' 
+    ? itemsList 
+    : itemsList.filter(product => {
+        if (activeTab === 'toys') return product.category === 'Toys'
+        if (activeTab === 'games') return product.category === 'Grocery'
+        if (activeTab === 'salud') return product.category === 'Health'
+        return false
+      })
 
   if (loading) {
     return (
-      <>
-        <div className='container text-center'>
-          <div className='row align-items-center spinner'>
-            <div className='col'>
-              <Spinner animation='border' variant='danger' />
-            </div>
-          </div>
-        </div>
-      </>
-    )
-  } else {
-    return (
-      <>
-        <h1 className='titulo text-center' style={{ margin: '2rem' }}>Productos disponibles</h1>
-        <div className='container-fluid mt-5'>
-          <div className='row mb-5'>
-            <div className='col'>
-              <div className='form__group'>
-                <input type='text' className='form__input' id='name' autoComplete='off' placeholder='Buscar Producto por el nombre...' onChange={handlerSearch} />
-                <label className='form__label'>Buscar Producto por el nombre...</label>
-              </div>
-            </div>
-          </div>
-        </div>
-        <Tabs
-          defaultActiveKey='todo'
-          id='justify-tab-example'
-          className='mb-3'
-          justify
-        >
-          <Tab className='tabs' eventKey='todo' title='Ver todo'>
-            <div className='d-flex flex-row flex-wrap justify-content-center'>
-              {/* Si itemsData no esta vacio, recorro el arreglo con Map y creo un Card de Bootstrap para cada elemento */}
-              {itemsList && itemsList.map((product) => (
-                <Card className='cards' style={{ width: '23rem' }} key={product.id}>
-                  <Card.Img variant='top' src={product.image} alt={product.product_name} />
-                  <Card.Body>
-                    <Card.Title>{product.product_name}</Card.Title>
-                    <Card.Text>
-                      {product.description}
-                    </Card.Text>
-                  </Card.Body>
-                  <ListGroup className='list-group-flush'>
-                    <ListGroup.Item>${product.price}</ListGroup.Item>
-                  </ListGroup>
-                  <Card.Body>
-                    <Button
-                      onClick={() => {
-                        handleShow()
-                        setCount((count) => (count + 1))
-                        localStorage.setItem("contador", count)
-                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
-                        
-                      }} variant='secondary'
-                    >Agregar al carrito
-                    </Button>
-                  </Card.Body>
-                </Card>
-              ))}
-            </div>
-          </Tab>
-          <Tab eventKey='toys' title='Toys'>
-            <div className='d-flex flex-row flex-wrap justify-content-center'>
-              {itemsList && itemsList.filter(product => product.category === 'Toys')
-                .map((product) => (
-                  <Card className='cards' style={{ width: '23rem' }} key={product.id}>
-                    <Card.Img variant='top' src={product.image} alt={product.product_name} />
-                    <Card.Body>
-                      <Card.Title>{product.product_name}</Card.Title>
-                      <Card.Text>
-                        {product.description}
-                      </Card.Text>
-                    </Card.Body>
-                    <ListGroup className='list-group-flush'>
-                      <ListGroup.Item>${product.price}</ListGroup.Item>
-                    </ListGroup>
-                    <Card.Body>
-                      <Button
-                        onClick={() => {
-                          handleShow()
-                        setCount((count) => (count + 1))
-                        localStorage.setItem("contador", count)
-                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
-                        }} variant='secondary'
-                      >Agregar al carrito
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                ))}
-            </div>
-          </Tab>
-          <Tab eventKey='games' title='Games'>
-            <div className='d-flex flex-row flex-wrap justify-content-center'>
-              {itemsList && itemsList.filter(product => product.category === 'Grocery')
-                .map((product) => (
-                  <Card className='cards' style={{ width: '23rem' }} key={product.id}>
-                    <Card.Img variant='top' src={product.image} alt={product.product_name} />
-                    <Card.Body>
-                      <Card.Title>{product.product_name}</Card.Title>
-                      <Card.Text>
-                        {product.description}
-                      </Card.Text>
-                    </Card.Body>
-                    <ListGroup className='list-group-flush'>
-                      <ListGroup.Item>${product.price}</ListGroup.Item>
-                    </ListGroup>
-                    <Card.Body>
-                      <Button
-                        onClick={() => {
-                          handleShow()
-                        setCount((count) => (count + 1))
-                        localStorage.setItem("contador", count)
-                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
-                        }} variant='secondary'
-                      >Agregar al carrito
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                ))}
-            </div>
-          </Tab>
-          <Tab eventKey='salud' title='Salud'>
-            <div className='d-flex flex-row flex-wrap justify-content-center'>
-              {itemsList && itemsList.filter(product => product.category === 'Health')
-                .map((product) => (
-                  <Card className='cards' style={{ width: '23rem' }} key={product.id}>
-                    <Card.Img variant='top' src={product.image} alt={product.product_name} />
-                    <Card.Body>
-                      <Card.Title>{product.product_name}</Card.Title>
-                      <Card.Text>
-                        {product.description}
-                      </Card.Text>
-                    </Card.Body>
-                    <ListGroup className='list-group-flush'>
-                      <ListGroup.Item>${product.price}</ListGroup.Item>
-                    </ListGroup>
-                    <Card.Body>
-                      <Button
-                        onClick={() => {
-                          handleShow()
-                        setCount((count) => (count + 1))
-                        localStorage.setItem("contador", count)
-                        localStorage.setItem(`Producto${localStorage.getItem("contador")}`, JSON.stringify(product))
-                        }} variant='secondary'
-                      >Agregar al carrito
-                      </Button>
-                    </Card.Body>
-                  </Card>
-                ))}
-            </div>
-          </Tab>
-        </Tabs>
-        <div className='margin' />
-
-        <Modal show={show} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Producto agregado al carrito</Modal.Title>
-          </Modal.Header>
-          {/* <Modal.Body>Woohoo, you are reading this text in a modal!</Modal.Body> */}
-          <Modal.Footer>
-            <Button variant='secondary' onClick={handleClose}>
-              Close
-            </Button>
-            <Nav.Link href='/Carrito'>Carrito</Nav.Link>
-          </Modal.Footer>
-        </Modal>
-      </>
+      <div className="flex items-center justify-center h-screen">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
     )
   }
+
+  return (
+    <div className="relative min-h-screen">
+      <Header 
+        count={count} 
+        toggleCart={() => setShowCart(!showCart)} 
+      />
+
+      <main className="pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search Section */}
+        <div className="mb-8">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Buscar productos..."
+              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+              value={search}
+              onChange={handleSearch}
+            />
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="mb-8">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8">
+              {[
+                { id: 'todo', name: 'Todos los productos' },
+                { id: 'toys', name: 'Juguetes' },
+                { id: 'games', name: 'Alimentos' },
+                { id: 'salud', name: 'Salud' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`
+                    whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                    ${activeTab === tab.id
+                      ? 'border-blue-500 text-blue-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
+                  `}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </nav>
+          </div>
+        </div>
+
+        {/* Product Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {filteredItems.map((product) => (
+            <div 
+              key={product.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
+            >
+              <div className="h-48 overflow-hidden relative">
+                <img 
+                  src={product.image} 
+                  alt={product.product_name} 
+                  className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
+                />
+                <div className="absolute top-2 right-2 bg-yellow-400 text-xs font-semibold px-2 py-1 rounded-full flex items-center">
+                  <Star className="h-3 w-3 mr-1 fill-current" />
+                  4.5
+                </div>
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">{product.product_name}</h3>
+                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+                <div className="flex items-center justify-between">
+                  <span className="text-xl font-bold text-gray-900">${product.price}</span>
+                  <button
+                    onClick={() => addToCart(product)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                  >
+                    Agregar al carrito
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Empty State */}
+        {filteredItems.length === 0 && (
+          <div className="text-center py-12">
+            <div className="mx-auto h-12 w-12 text-gray-400">
+              <Search className="h-12 w-12" />
+            </div>
+            <h3 className="mt-2 text-lg font-medium text-gray-900">No se encontraron productos</h3>
+            <p className="mt-1 text-sm text-gray-500">
+              Intenta con otra búsqueda o categoría.
+            </p>
+          </div>
+        )}
+      </main>
+
+      <Cart 
+        showCart={showCart} 
+        toggleCart={() => setShowCart(!showCart)} 
+        cartItems={cartItems} 
+        removeFromCart={removeFromCart} 
+        count={count} 
+      />
+
+      <AddedToCartModal 
+        showModal={showModal} 
+        setShowModal={setShowModal} 
+        selectedProduct={selectedProduct} 
+        setShowCart={setShowCart} 
+      />
+
+      <AuthModal 
+        show={showAuthModal} 
+        onClose={() => setShowAuthModal(false)} 
+        onLogin={() => navigate('/login')} 
+      />
+
+      <Footer />
+    </div>
+  )
 }

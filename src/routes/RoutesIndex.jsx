@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
-import { Home, Dashboard, Login, Carrito, Signup } from '@/Pages'
+import { Home, Dashboard, Login, Signup } from '@/Pages'
 import { useAuthContext } from '@/Hooks/useAuthContext'
 
 const RoutesIndex = () => {
@@ -14,12 +14,7 @@ const RoutesIndex = () => {
 }
       />
       <Route path='/login' element={<Login />} />
-      <Route
-        path='/carrito'
-        element={
-        isAuth ? <Carrito /> : <Login />
-}
-      />
+      <Route path='/signup' element={<Signup />} />
       <Route path='/signup' element={<Signup />} />
     </Routes>
   )

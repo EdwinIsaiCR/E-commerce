@@ -1,95 +1,62 @@
 import React from 'react'
-import './header.scss'
-import Button from 'react-bootstrap/Button'
 import { useAuthContext } from '@/Hooks/useAuthContext'
-import Container from 'react-bootstrap/Container'
-import Nav from 'react-bootstrap/Nav'
-import Navbar from 'react-bootstrap/Navbar'
+import { ShoppingCart } from 'lucide-react'
 
-const Header = () => {
+const Header = ({ count, toggleCart, vaciarLocal }) => {
   const { logout, isAuth } = useAuthContext()
 
-  function vaciarLocal(){
-    const anchura = (localStorage.length - 1)
-    for (let index = 0; index <= anchura; index++) {
-    (localStorage.removeItem(`Producto${index}`))
+  const linkIsActive = (isActive) => {
+    return isActive ? 'text-blue-600 font-bold' : 'text-gray-700 hover:text-blue-600'
   }
-  localStorage.removeItem("contador")
-  }
-
-  const linkIsActive = (isActive) =>
-    isActive ? 'header__item-link header__item-link--is-active' : 'header__item-link'
 
   return (
-    <Navbar className='header' bg='light' data-bs-theme='light'>
-      <Container className='header'>
-        <Navbar.Brand className='header__logo' href='/'>
-          <img
-            src='https://www.creativefabrica.com/wp-content/uploads/2020/02/10/Shop-Logo-Graphics-1-580x386.jpg'
-            width='90'
-            height='auto'
-            alt='logo'
-          />
-          <p className='eslogan'>Shop from anyway, anytime</p>
-        </Navbar.Brand>
-        <Nav className='header__nav-list me-auto'>
-          <Nav.Link className={({ isActive }) => linkIsActive(isActive)} href='/'>Home</Nav.Link>
-          <Nav.Link className={({ isActive }) => linkIsActive(isActive)} href='/dashboard'>Dashboard</Nav.Link>
+    <header className="bg-white shadow">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-bold text-gray-900">Mi Tienda Online</h1>
 
-          {isAuth
-            ? (
-              <>
-                <Nav.Link className={({ isActive }) => linkIsActive(isActive)} href='/Carrito'>Carrito</Nav.Link>
-                <Button className='header__item-link' onClick={() => {
-                  logout()
-                  vaciarLocal()}
-                  } variant='dark'><a className='logout' href='/login'>logout</a></Button>
-              </>
-              )
-            : (
-              <>
-                <Nav.Link className={({ isActive }) => linkIsActive(isActive)} href='/login'>Login</Nav.Link>
-                <Nav.Link className={({ isActive }) => linkIsActive(isActive)} href='/signup'>Signup</Nav.Link>
-              </>
+          <div className="flex items-center space-x-6">
+            {/* Navigation Links */}
+            <nav className="flex space-x-4 items-center">
+              <a href="/" className={linkIsActive(window.location.pathname === '/')}>Home</a>
+              <a href="/dashboard" className={linkIsActive(window.location.pathname === '/dashboard')}>Mi cuenta</a>
+
+              {isAuth ? (
+                <>
+                  <button
+                    onClick={toggleCart}
+                    className="relative bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center"
+                  >
+                    <ShoppingCart className="mr-2" size={20} />
+                    <span>Carrito</span>
+                    {count > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                        {count}
+                      </span>
+                    )}
+                  </button>
+                  <button
+                    className="px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded"
+                    onClick={() => {
+                      logout()
+                      vaciarLocal()
+                    }}
+                  >
+                    Cerrar Sesión
+                  </button>
+                </>
+              ) : (
+                <>
+                  <a href="/login" className={linkIsActive(window.location.pathname === '/login')}>Login</a>
+                  <a href="/signup" className={linkIsActive(window.location.pathname === '/signup')}>Signup</a>
+                </>
               )}
-        </Nav>
-      </Container>
-    </Navbar>
+            </nav>
 
-  /* <nav className='header'>
-      <NavLink className='header__logo' to='/'>Logo</NavLink>
-      <ul className='header__nav-list'>
-        <li className='header__nav-item'>
-          <NavLink className={({ isActive }) => linkIsActive(isActive)} to='/'>Home</NavLink>
-        </li>
-        <li className='header__nav-item'>
-          <NavLink className={({ isActive }) => linkIsActive(isActive)} to='/dashboard'>Dashboard</NavLink>
-        </li>
-
-        {isAuth
-          ? (
-            <>
-              <li className='header__nav-item'>
-                <NavLink className={({ isActive }) => linkIsActive(isActive)} to='/secret'>Secret</NavLink>
-              </li>
-              <li className='header__list-item'>
-                <button className='header__item-link' onClick={logout}>Logout</button>
-              </li>
-            </>
-            )
-          : (
-            <>
-              <li className='header__nav-item'>
-                <NavLink className={({ isActive }) => linkIsActive(isActive)} to='/login'>Login</NavLink>
-              </li>
-              <li className='header__nav-item'>
-                <NavLink className={({ isActive }) => linkIsActive(isActive)} to='/signup'>Signup</NavLink>
-              </li>
-            </>
-            )}
-
-      </ul>
-    </nav> */
+          </div>
+        </div>
+      </div>
+    </header>
   )
 }
 

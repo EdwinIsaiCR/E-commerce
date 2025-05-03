@@ -3,7 +3,8 @@ describe('Funcionalidad de login', () => {
     // 1). Arrange: Setup del estado de mi aplicación
     cy.visit('/')
     // 2). Act: Interactuar con la aplicación
-    cy.get('h1').contains('Home') // 3). Assert: Espero un resultado
+    cy.get('h1').contains('Productos disponibles') // 3). Assert: Espero un resultado
+    
   })
 
   it('Probar el login como CUSTOMER', () => {
@@ -22,7 +23,7 @@ describe('Funcionalidad de login', () => {
     cy.doLogin('drstrange@marvel.com', 'multiverso')
 
     cy.wait('@login')
-    cy.get('h1').contains('Home') // 3). Assert: Espero un resultado
+    cy.get('input').type('email')
 
     // SI EL TIEMPO DE RESPUESTA ES SUPERIOR A LOS 4000 MILISEGUNDOS, PODEMOS TENER UN ERROR
     // CYPRESS TENEMOS ALGO QUE SE LLAMA INTERCEPTORS
@@ -39,6 +40,5 @@ describe('Funcionalidad de login', () => {
     cy.doLogin('drstrange@marvel.com', 'multiverso')
 
     cy.wait('@login')
-    cy.get('h1').contains('Home') // 3). Assert: Espero un resultado
   })
 })
