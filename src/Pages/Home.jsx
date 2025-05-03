@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Search, ShoppingCart, Star } from 'lucide-react'
+import { Search, ShoppingCart, Star, Menu, X } from 'lucide-react'
 import { getAllItemsService } from '@/services/itemServices'
 import Header from '@/components/Header/Header'
 import Cart from '@/components/Card/Cart'
@@ -19,6 +19,7 @@ export default function Home() {
   const [cartItems, setCartItems] = useState([])
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const token = localStorage.getItem('token')
 
   useEffect(() => {
@@ -109,6 +110,11 @@ export default function Home() {
         return false
       })
 
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId)
+    setMobileMenuOpen(false)
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -117,16 +123,23 @@ export default function Home() {
     )
   }
 
+  const tabs = [
+    { id: 'todo', name: 'Todos los productos' },
+    { id: 'toys', name: 'Juguetes' },
+    { id: 'games', name: 'Alimentos' },
+    { id: 'salud', name: 'Salud' }
+  ]
+
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen flex flex-col">
       <Header 
         count={count} 
         toggleCart={() => setShowCart(!showCart)} 
       />
 
-      <main className="pb-12 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-grow pb-12 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Search Section */}
-        <div className="mb-8">
+        <div className="mb-4 sm:mb-8">
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <Search className="h-5 w-5 text-gray-400" />
@@ -134,28 +147,23 @@ export default function Home() {
             <input
               type="text"
               placeholder="Buscar productos..."
-              className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+              className="block w-full pl-10 pr-3 py-2 sm:py-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 shadow-sm"
               value={search}
               onChange={handleSearch}
             />
           </div>
         </div>
 
-        {/* Tabs */}
-        <div className="mb-8">
+        {/* Tabs - Desktop */}
+        <div className="hidden sm:block mb-6 sm:mb-8">
           <div className="border-b border-gray-200">
-            <nav className="-mb-px flex space-x-8">
-              {[
-                { id: 'todo', name: 'Todos los productos' },
-                { id: 'toys', name: 'Juguetes' },
-                { id: 'games', name: 'Alimentos' },
-                { id: 'salud', name: 'Salud' }
-              ].map((tab) => (
+            <nav className="-mb-px flex flex-wrap space-x-4 md:space-x-8">
+              {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`
-                    whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
+                    whitespace-nowrap py-2 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm
                     ${activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'}
@@ -168,14 +176,53 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Tabs - Mobile */}
+        <div className="sm:hidden mb-6">
+          <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+            <span className="text-sm font-medium text-gray-900">
+              {tabs.find(tab => tab.id === activeTab)?.name || 'Categorías'}
+            </span>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="bg-white rounded-md p-2 flex items-center justify-center text-gray-400"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+          
+          {mobileMenuOpen && (
+            <div className="mt-2 py-2 bg-white shadow-lg rounded-md border border-gray-200 absolute z-10 left-4 right-4">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabClick(tab.id)}
+                  className={`
+                    block w-full text-left px-4 py-2 text-sm
+                    ${activeTab === tab.id
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-gray-500 hover:bg-gray-50'}
+                  `}
+                >
+                  {tab.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {filteredItems.map((product) => (
             <div 
               key={product.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
             >
-              <div className="h-48 overflow-hidden relative">
+              <div className="h-36 sm:h-48 overflow-hidden relative">
                 <img 
                   src={product.image} 
                   alt={product.product_name} 
@@ -186,16 +233,16 @@ export default function Home() {
                   4.5
                 </div>
               </div>
-              <div className="p-4">
-                <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">{product.product_name}</h3>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+              <div className="p-3 sm:p-4">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-1 sm:mb-2 line-clamp-1">{product.product_name}</h3>
+                <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{product.description}</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xl font-bold text-gray-900">${product.price}</span>
+                  <span className="text-lg sm:text-xl font-bold text-gray-900">${product.price}</span>
                   <button
                     onClick={() => addToCart(product)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-2 sm:px-4 py-1 sm:py-2 rounded-md text-xs sm:text-sm font-medium"
                   >
-                    Agregar al carrito
+                    Agregar
                   </button>
                 </div>
               </div>
@@ -205,12 +252,12 @@ export default function Home() {
 
         {/* Empty State */}
         {filteredItems.length === 0 && (
-          <div className="text-center py-12">
-            <div className="mx-auto h-12 w-12 text-gray-400">
-              <Search className="h-12 w-12" />
+          <div className="text-center py-8 sm:py-12">
+            <div className="mx-auto h-8 sm:h-12 w-8 sm:w-12 text-gray-400">
+              <Search className="h-8 sm:h-12 w-8 sm:w-12" />
             </div>
-            <h3 className="mt-2 text-lg font-medium text-gray-900">No se encontraron productos</h3>
-            <p className="mt-1 text-sm text-gray-500">
+            <h3 className="mt-2 text-base sm:text-lg font-medium text-gray-900">No se encontraron productos</h3>
+            <p className="mt-1 text-xs sm:text-sm text-gray-500">
               Intenta con otra búsqueda o categoría.
             </p>
           </div>
