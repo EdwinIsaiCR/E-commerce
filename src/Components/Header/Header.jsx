@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { useAuthContext } from '@/Hooks/useAuthContext'
 import { ShoppingCart, Menu, X } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function Header ({ count, toggleCart, vaciarLocal }) {
   const { logout, isAuth } = useAuthContext()
@@ -53,8 +54,8 @@ export default function Header ({ count, toggleCart, vaciarLocal }) {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             <nav className="flex space-x-4 items-center">
-              <a href="/" className={linkIsActive(window.location.pathname === '/')}>Home</a>
-              <a href="/dashboard" className={linkIsActive(window.location.pathname === '/dashboard')}>Mi cuenta</a>
+              <Link to="/" className={linkIsActive(window.location.pathname === '/')}>Home</Link>
+              <Link to="/dashboard" className={linkIsActive(window.location.pathname === '/dashboard')}>Mi cuenta</Link>
 
               {isAuth ? (
                 <>
@@ -82,8 +83,8 @@ export default function Header ({ count, toggleCart, vaciarLocal }) {
                 </>
               ) : (
                 <>
-                  <a href="/login" className={linkIsActive(window.location.pathname === '/login')}>Login</a>
-                  <a href="/signup" className={linkIsActive(window.location.pathname === '/signup')}>Signup</a>
+                  <Link to="/login" className={linkIsActive(window.location.pathname === '/login')}>Login</Link>
+                  <Link to="/signup" className={linkIsActive(window.location.pathname === '/signup')}>Signup</Link>
                 </>
               )}
             </nav>
