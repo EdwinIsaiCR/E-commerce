@@ -18,15 +18,6 @@ export default function Footer() {
               <li><a href="#" className="hover:text-white">Contacto</a></li>
             </ul>
           </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-4">Contáctanos</h3>
-            <p className="text-sm text-gray-300">
-              Calle Principal 123<br />
-              Ciudad, País<br />
-              info@mitienda.com<br />
-              +123 456 7890
-            </p>
-          </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-700 text-center text-sm text-gray-400">
           <p>&copy; 2023 Mi Tienda Online. Todos los derechos reservados.</p>
