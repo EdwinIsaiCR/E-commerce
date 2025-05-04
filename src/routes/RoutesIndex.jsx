@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import Home from '@/Pages/Home'
 import Dashboard from '@/Pages/Dashboard'
 import Login from '@/Pages/Login'
@@ -13,11 +13,18 @@ const RoutesIndex = () => {
       <Route
         path='/dashboard'
         element={
-        isAuth ? <Dashboard /> : <Login />
-}
+          isAuth ? <Dashboard /> : <Navigate to="/login" />
+        }
       />
-      <Route path='/login' element={<Login />} />
-      <Route path='/signup' element={<Signup />} />
+      <Route
+        path="/login"
+        element={isAuth ? <Navigate to="/dashboard" /> : <Login />}
+      />
+
+      <Route
+        path="/signup"
+        element={isAuth ? <Navigate to="/dashboard" /> : <Signup />}
+      />
     </Routes>
   )
 }
