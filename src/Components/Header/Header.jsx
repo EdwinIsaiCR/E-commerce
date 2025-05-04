@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useAuthContext } from '@/Hooks/useAuthContext'
 import { ShoppingCart, Menu, X } from 'lucide-react'
 
-const Header = ({ count, toggleCart, vaciarLocal }) => {
+export default function Header ({ count, toggleCart, vaciarLocal }) {
   const { logout, isAuth } = useAuthContext()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -159,5 +159,3 @@ const Header = ({ count, toggleCart, vaciarLocal }) => {
     </header>
   )
 }
-
-export default Header

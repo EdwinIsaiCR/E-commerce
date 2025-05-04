@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { AlertCircle } from 'lucide-react'
 import Header from '../Components/Header/Header'
 
-const Login = () => {
+export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm()
   const [error, setError] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -179,5 +179,3 @@ const Login = () => {
     </>
   )
 }
-
-export default Login

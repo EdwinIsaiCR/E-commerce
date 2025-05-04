@@ -3,10 +3,10 @@ import { Navigate } from 'react-router-dom'
 import { getMeUserService } from '@/services/userServices'
 import Footer from '@/Components/Footer/Footer'
 import Header from '@/Components/Header/Header'
-import Cart from '@/components/Card/Cart'
-import LoadingSpinner from '@/components/Loaging/LoadingSpinner' // Asume que tienes este componente
+import Cart from '@/Components/Card/Cart'
+import LoadingSpinner from '@/Components/Loaging/LoadingSpinner' // Asume que tienes este componente
 
-const Dashboard = () => {
+export default function Dashboard() {
   const [userData, setUserData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -204,5 +204,3 @@ const Dashboard = () => {
     </>
   )
 }
-
-export default Dashboard
