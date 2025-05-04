@@ -1,5 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
-import { Home, Dashboard, Login, Signup } from '@/Pages'
+import Home from '@/Pages/Home'
+import Dashboard from '@/Pages/Dashboard'
+import Login from '@/Pages/Login'
+import Signup from '@/Pages/Signup'
 import { useAuthContext } from '@/Hooks/useAuthContext'
 
 const RoutesIndex = () => {
