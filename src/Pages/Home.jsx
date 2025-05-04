@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { Search, ShoppingCart, Star, Menu, X } from 'lucide-react'
 import { getAllItemsService } from '@/services/itemServices'
-import Header from '@/components/Header/Header'
-import Cart from '@/components/Card/Cart'
-import Footer from '@/components/Footer/Footer'
-import AddedToCartModal from '@/components/Card/AddedToCartModal'
-import AuthModal from '@/components/Card/AuthModal'
+import Header from '@/Components/Header/Header'
+import Cart from '@/Components/Card/Cart'
+import Footer from '@/Components/Footer/Footer'
+import AddedToCartModal from '@/Components/Card/AddedToCartModal'
+import AuthModal from '@/Components/Card/AuthModal'
 
 export default function Home() {
   const [itemsList, setItemList] = useState([])
